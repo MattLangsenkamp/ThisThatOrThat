@@ -1,11 +1,14 @@
 package src;
 
 
+import java.util.concurrent.CountDownLatch;
+
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -14,20 +17,46 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 
 public class InfoFormView extends Application{
+	MainGameView screenNew = new MainGameView();
+	public static Controller controll;
+	//-----
+	public static final CountDownLatch latch = new CountDownLatch(1);
+    public static InfoFormView startUpTest = null;
 
-		@Override
+    public static InfoFormView waitForStartUpTest(Controller cont) {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        controll = cont;
+        return startUpTest;
+    }
+
+    public static void setStartUpTest(InfoFormView startUpTest0) {
+        startUpTest = startUpTest0;
+        latch.countDown();
+    }
+
+    public void StartUpTest() {
+        setStartUpTest(this);
+    }
+
+    public void printSomething() {
+        System.out.println("You called a method on the application");
+    }
+    //-----
+	@Override
 		public void start(Stage stage) {
-
 	        initUI(stage);
 	    }
 
@@ -82,9 +111,9 @@ public class InfoFormView extends Application{
 	        Label lbl2 = new Label("Team 2");
 	        Label lbl3 = new Label("Team 3");
 	        
-	        TextField field1 = new TextField();
-	        TextField field2 = new TextField();
-	        TextField field3 = new TextField();
+	        TextField field1 = new TextField("Team 1");
+	        TextField field2 = new TextField("Team 2");
+	        TextField field3 = new TextField("Team 3");
 	        
 	        lbl1.setLabelFor(field1);
 	        lbl2.setLabelFor(field2);
@@ -112,9 +141,9 @@ public class InfoFormView extends Application{
 	        Label lbl5 = new Label("Search 2");
 	        Label lbl6 = new Label("Search 3");
 	        
-	        TextField field4 = new TextField();
-	        TextField field5 = new TextField();
-	        TextField field6 = new TextField();
+	        TextField field4 = new TextField("Search 1");
+	        TextField field5 = new TextField("Search 2");
+	        TextField field6 = new TextField("Search 3");
 	        
 	        lbl4.setLabelFor(field4);
 	        lbl5.setLabelFor(field5);
@@ -146,10 +175,63 @@ public class InfoFormView extends Application{
 
 	        Timeline task = new Timeline(frame1, frame2);
 
-	        Button btn = new Button("Start");
-	        btn.setOnAction((ActionEvent actionEvent) -> {
+	       
+	        contBtn.setOnAction((ActionEvent actionEvent) -> {
 	            task.playFromStart();
+	            
+	            
+	            
+	           
+	            if(twoTeams.isSelected()||threeTeams.isSelected())
+	            {
+	            	if(twoTeams.isSelected())
+	            	{
+	            		Controller.setNameNumb(2);
+	            		Controller.setNames(field1.getText(), 0);
+	            		Controller.setNames(field2.getText(), 1);	            		       		
+	            	}
+	            	else
+	            	{
+	            		Controller.setNameNumb(3);
+	            		Controller.setNames(field1.getText(), 0);
+	    	            Controller.setNames(field2.getText(), 1);
+	    	            Controller.setNames(field3.getText(), 2);	    	            
+	            	}
+	        	}
+	            else
+	            {
+	            	//
+	            	
+	            }
+
+	            if(twoSearches.isSelected()||threeSearches.isSelected())
+	            {
+	            	if(twoSearches.isSelected())
+	            	{
+	            		Controller.setFields(2);
+	            		Controller.setSearches(field4.getText(), 0);
+	            		Controller.setSearches(field5.getText(), 1);        		
+	            	}
+	            	else
+	            	{
+	            		Controller.setFields(3);	            
+	    	            Controller.setSearches(field4.getText(), 0);
+	            		Controller.setSearches(field5.getText(), 1); 
+	            		Controller.setSearches(field6.getText(), 2); 
+	            	}
+	        	}
+	            else
+	            {
+	            	//popup
+	            	
+	            }
+	            
+	            screenNew.start(stage);
+	            screenNew.registerController(controll);
+	            
 	        });
+	        
+	        progress.getChildren().add(pbar);
 	        //-----
 	        container.getChildren().add(descriptionText);
 	        container.getChildren().add(teamNumber);
@@ -157,18 +239,30 @@ public class InfoFormView extends Application{
 	        container.getChildren().add(searchNumber);
 	        container.getChildren().add(searchNames);
 	        container.getChildren().add(contButton);
+	        container.getChildren().add(progress);
 	        
 	        
 	        //-----
 	        Scene scene = new Scene(container, 600, 350);
 	        
 	        stage.setTitle("Info Form");
+	        stage.setOnCloseRequest(new EventHandler<WindowEvent>() 
+            {
+                public void handle(WindowEvent e){
+                    System.out.println("test");  
+                    try {
+                        System.exit(0);
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            });
 	        stage.setScene(scene);
 	        stage.show();
-
 	    }
-
-	  public static void main(String[] args) {
+	
+	   
+	    public static void main(String[] args) {
 	       launch(args);
 	    }
 }

@@ -2,13 +2,14 @@ package src;
 
 public class Model {
 
-	public static String[] teamNames = new String[3];
-	public static String[] searchs = new String[3];
-	public static int[] scores = new int[3];
-	public static int fields = 0;
-	public static int rounds = 0;
+	public String[] teamNames = new String[3];
+	public String[] searchs = new String[3];
+	public int[] scores = new int[3];
+	public int fields = 0;
+	public int names = 0;
+	public int rounds = 0;
 	
-	private Controller controll;
+	public Controller controll;
 			
 	public int score(int team)
 	{
@@ -28,5 +29,9 @@ public class Model {
 	public void registerController(Controller controllSet)
 	{
 		this.controll = controllSet;
+	}
+	public int nameNumb()
+	{
+		return names;
 	}
 }
